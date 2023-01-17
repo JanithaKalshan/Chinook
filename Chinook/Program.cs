@@ -1,6 +1,7 @@
-using Chinook;
 using Chinook.Areas.Identity;
 using Chinook.Models;
+using Chinook.RepositoryEF;
+using Chinook.RepositoryEF.Interfaces;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,6 +9,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContextFactory<ChinookContext>(opt => opt.UseSqlite(connectionString));
+//builder.Services.AddDbContext<ChinookContext>(
+//        options => options.UseSqlite(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddDefaultIdentity<ChinookUser>(options => options.SignIn.RequireConfirmedAccount = true)
@@ -17,6 +20,10 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 
 builder.Services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<ChinookUser>>();
+builder.Services.AddScoped<IPlayListRepository, PlayListRepository>();
+builder.Services.AddScoped<IArtistRepository, ArtistRepository>();
+builder.Services.AddScoped<ITrackRepository, TrackRepository>();
+builder.Services.AddScoped<IUserPlayList, UserPlayList>();
 
 var app = builder.Build();
 

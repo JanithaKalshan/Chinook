@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Chinook.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
-namespace Chinook;
+namespace Chinook.RepositoryEF;
 
 public partial class ChinookContext : IdentityDbContext<ChinookUser>
 {
@@ -29,6 +29,7 @@ public partial class ChinookContext : IdentityDbContext<ChinookUser>
     public virtual DbSet<Playlist> Playlists { get; set; } = null!;
     public virtual DbSet<Track> Tracks { get; set; } = null!;
     public virtual DbSet<UserPlaylist> UserPlaylists { get; set; } = null!;
+    public virtual DbSet<PlaylistTrack> PlaylistTracks { get; set; } = null!;
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -214,6 +215,14 @@ public partial class ChinookContext : IdentityDbContext<ChinookUser>
             entity.Property(e => e.Name).HasColumnType("NVARCHAR(120)");
         });
 
+
+        modelBuilder.SharedTypeEntity<Dictionary<string, object>>("PlaylistTrack", entity =>
+        {
+            entity.Property<long>("PlaylistId");
+            entity.Property<long>("TrackId");
+            entity.HasKey("PlaylistId", "TrackId");
+
+        });
         modelBuilder.Entity<Playlist>(entity =>
         {
             entity.ToTable("Playlist");
@@ -284,6 +293,8 @@ public partial class ChinookContext : IdentityDbContext<ChinookUser>
                 .WithMany(u => u.UserPlaylists)
                 .HasForeignKey(up => up.PlaylistId);
         });
+
+
 
         OnModelCreatingPartial(modelBuilder);
 
